@@ -9040,5 +9040,16 @@
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
+    },
+    "io.github.switch_bros.SteamLibraryManager": {
+        "stable": {
+            "finish-args-unnecessary-xdg-data-Steam-rw-access": "Reads and writes Steam collections, localconfig.vdf, appinfo.vdf, shortcuts.vdf",
+            "finish-args-flatpak-appdata-folder-access": "Access Flatpak app data for Steam, Heroic, Lutris, Bottles and itch.io (all supported import sources for non-Steam shortcuts)",
+            "finish-args-unnecessary-xdg-data-lutris-ro-access": "Detect games in native Lutris installation for non-Steam shortcut import",
+            "finish-args-unnecessary-xdg-config-heroic-ro-access": "Detect games in native Heroic Games Launcher installation (Epic/GOG/Amazon) for non-Steam shortcut import",
+            "finish-args-unnecessary-xdg-data-flatpak-ro-access": "Detect installed Flatpak games for non-Steam shortcut import",
+            "finish-args-unnecessary-xdg-data-bottles-ro-access": "Detect games in native Bottles installation for non-Steam shortcut import",
+            "finish-args-unnecessary-xdg-config-itch-ro-access": "Detect games in native itch.io app installation for non-Steam shortcut import"
+        }
     }
 }
