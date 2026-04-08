@@ -9,11 +9,6 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "app.bluebubbles.BlueBubbles": {
-        "*": {
-            "finish-args-home-filesystem-access": "Predates the linter rule"
-        }
-    },
     "app.devsuite.Manuals": {
         "stable": {
             "finish-args-flatpak-spawn-access": "application uses libflatpak to install SDK documentation",
@@ -37,11 +32,6 @@
             "finish-args-flatpak-appdata-folder-access": "Predates the linter rule",
             "finish-args-host-var-access": "Predates the linter rule",
             "finish-args-unnecessary-xdg-data-flatpak-ro-access": "the app predates this linter rule"
-        }
-    },
-    "app.drey.Warp": {
-        "*": {
-            "finish-args-login1-system-talk-name": "Predates the linter rule"
         }
     },
     "app.freelens.Freelens": {
@@ -196,16 +186,10 @@
     },
     "ca.desrt.dconf-editor": {
         "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule",
             "finish-args-dconf-talk-name": "Predates the linter rule",
             "finish-args-direct-dconf-path": "Predates the linter rule",
             "finish-args-flatpak-spawn-access": "the app predates this linter rule",
             "finish-args-host-ro-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "ca.edestcroix.Recordbox": {
-        "*": {
-            "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
     "ca.littlesvr.asunder": {
@@ -544,11 +528,6 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "com.chowdsp.BYOD": {
-        "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.BYOD": "Predates the linter rule"
-        }
-    },
     "com.cinecred.cinecred": {
         "stable": {
             "finish-args-host-filesystem-access": "Predates the linter rule"
@@ -750,7 +729,6 @@
     "com.github.Bleuzen.FFaudioConverter": {
         "stable": {
             "appid-uses-code-hosting-domain": "app-id predates this linter rule",
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule",
             "finish-args-host-filesystem-access": "Predates the linter rule"
         }
     },
@@ -2140,11 +2118,6 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "com.mattjakeman.ExtensionManager": {
-        "*": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
-        }
-    },
     "com.microsoft.AzureStorageExplorer": {
         "stable": {
             "finish-args-login1-system-talk-name": "Predates the linter rule"
@@ -2591,11 +2564,6 @@
             "finish-args-has-socket-ssh-auth": "Predates the linter rule"
         }
     },
-    "com.thewavewarden.Odin2": {
-        "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.Odin2": "Predates the linter rule"
-        }
-    },
     "com.thincast.client": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
@@ -2623,7 +2591,6 @@
     },
     "com.tutanota.Tutanota": {
         "stable": {
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule",
             "finish-args-host-ro-filesystem-access": "Predates the linter rule"
         }
     },
@@ -2673,7 +2640,8 @@
             "finish-args-contains-both-x11-and-wayland": "not every game supports wayland",
             "finish-args-own-name-wildcard-com.steampowered": "Predates the linter rule",
             "module-platform-bootstrap-source-dir-not-allowed": "Predates the linter rule",
-            "module-steam_wrapper-source-dir-not-allowed": "Predates the linter rule"
+            "module-steam_wrapper-source-dir-not-allowed": "Predates the linter rule",
+            "finish-args-unnecessary-xdg-config-MangoHud-ro-access": "Needed for mangojuice to work"
         }
     },
     "com.valvesoftware.Steam.CompatibilityTool.Proton-GE": {
@@ -3230,11 +3198,6 @@
             "finish-args-flatpak-spawn-access": "the app predates this linter rule"
         }
     },
-    "eu.ad5001.LogarithmPlotter": {
-        "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
-        }
-    },
     "eu.betterbird.Betterbird": {
         "*": {
             "finish-args-gnupg-filesystem-access": "Predates the linter rule",
@@ -3535,7 +3498,8 @@
         "stable": {
             "finish-args-contains-both-x11-and-wayland": "Without socket=X11 Winetricks doesn't work on Wayland and without socket=wayland the Wine Wayland driver doesn't work.",
             "finish-args-home-filesystem-access": "Predates the linter rule",
-            "finish-args-unnecessary-xdg-config-MangoHud-ro-access": "Required for MangoHud to detect the settings file."
+            "finish-args-unnecessary-xdg-config-MangoHud-ro-access": "Required by MangoHud to detect the settings file.",
+            "finish-args-own-name-wildcard-com.steampowered": "Required by umu-launcher to access the Steam Runtime's pressure-vessel."
         }
     },
     "io.github.Fndroid.clash_for_windows": {
@@ -3825,11 +3789,6 @@
     "io.github.cosmic_utils.Examine": {
         "stable": {
             "finish-args-unnecessary-xdg-config-cosmic-ro-access": "Required to read the system theme and listen for config changes in the host"
-        }
-    },
-    "io.github.cosmic_utils.camera": {
-        "stable": {
-            "finish-args-unnecessary-xdg-config-cosmic-rw-access": "Required to read the system theme and write app configuration files"
         }
     },
     "io.github.ctlcltd.e2se": {
@@ -4180,8 +4139,7 @@
             "finish-args-flatpak-spawn-access": "Runs host binaries in order to successfully install and launch apps",
             "finish-args-flatpak-system-folder-access": "Needs access to system-wide flatpak installation so that it can manage them",
             "finish-args-flatpak-system-talk-name": "Talks to the system-wide flatpak dbus address in order to query existence of flatpaks and send installation commands to it",
-            "finish-args-unnecessary-xdg-data-flatpak-rw-access": "Needs access to user-wide flatpak installation so it can manage them",
-            "finish-args-portal-impl-permissionstore-talk-name": "Needed to modify dynamic permissions"
+            "finish-args-unnecessary-xdg-data-flatpak-rw-access": "Needs access to user-wide flatpak installation so it can manage them"
         }
     },
     "io.github.kotatogram": {
@@ -4724,6 +4682,11 @@
     "io.github.stella_emu.Stella": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
+        }
+    },
+    "io.github.stephanecouturier.Katalog": {
+        "stable": {
+            "finish-args-host-filesystem-access": "Katalog is a file catalog manager that indexes files from arbitrary storage locations. Users point catalogs at any path on the system including external drives, NAS, and removable media mounted anywhere on the host filesystem."
         }
     },
     "io.github.streetpea.Chiaki4deck": {
@@ -5288,11 +5251,6 @@
             "finish-args-unnecessary-xdg-data-gnome-background-properties-create-access": "https://github.com/dusansimic/dynamic-wallpaper/issues/5"
         }
     },
-    "me.iepure.devtoolbox": {
-        "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
-        }
-    },
     "me.kozec.syncthingtk": {
         "*": {
             "finish-args-host-filesystem-access": "Predates the linter rule"
@@ -5650,11 +5608,6 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "net.sonobus.SonoBus": {
-        "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.SonoBus": "Predates the linter rule"
-        }
-    },
     "net.sourceforge.GrandOrgue": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
@@ -5740,11 +5693,6 @@
     "net.sourceforge.wavbreaker": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "net.unvanquished.Unvanquished": {
-        "stable": {
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule"
         }
     },
     "net.waterfox.waterfox": {
@@ -6305,6 +6253,7 @@
     "org.freedesktop.LinuxAudio.BaseExtension": {
         "stable": {
             "appstream-metainfo-missing": "This provides an extension point only",
+            "appstream-missing-appinfo-file": "This provides an extension point only",
             "finish-args-not-defined": "This provides an extension point only",
             "toplevel-no-command": "This provides an extension point only"
         }
@@ -6612,7 +6561,6 @@
     },
     "org.gnome.Keysign": {
         "*": {
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule",
             "finish-args-gnupg-filesystem-access": "Predates the linter rule"
         }
     },
@@ -6820,6 +6768,18 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
+    "org.gnome.Manuals": {
+        "stable": {
+            "finish-args-flatpak-spawn-access": "application uses libflatpak to install SDK documentation",
+            "finish-args-flatpak-system-folder-access": "application uses libflatpak to install SDK documentation",
+            "finish-args-flatpak-system-talk-name": "application uses libflatpak install SDK documentation",
+            "finish-args-flatpak-user-folder-access": "application uses libflatpak to install SDK documentation",
+            "finish-args-host-os-ro-filesystem-access": "Reads documentations installed in the Host system",
+            "finish-args-unnecessary-xdg-data-devhelp-ro-access": "Manuals requires access to locally installed documentation",
+            "finish-args-unnecessary-xdg-data-doc-ro-access": "Manuals requires access to locally installed documentation",
+            "finish-args-unnecessary-xdg-data-gtk-doc-ro-access": "Manuals requires access to locally installed documentation"
+        }
+    },
     "org.gnome.meld": {
         "stable": {
             "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule",
@@ -6940,7 +6900,6 @@
     },
     "org.guitarix.Guitarix": {
         "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.Guitarix": "Predates the linter rule",
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
@@ -7970,7 +7929,6 @@
     },
     "org.musicbrainz.Picard": {
         "stable": {
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule",
             "finish-args-home-filesystem-access": "Predates the linter rule",
             "finish-args-host-tmp-access": "Predates the linter rule"
         }
@@ -8383,19 +8341,9 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "org.stochas.Stochas": {
-        "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.Stochas": "Predates the linter rule"
-        }
-    },
     "org.sugarlabs.MusicBlocks": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "org.surge_synth_team.surge-xt": {
-        "stable": {
-            "appid-unprefixed-bundled-extension-org.freedesktop.LinuxAudio.Plugins.Surge-XT": "Predates the linter rule"
         }
     },
     "org.swi_prolog.swipl": {
@@ -9040,6 +8988,12 @@
     "xyz.woxel.Woxel": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
+        }
+    },
+    "com.orcaslicer.OrcaSlicer": {
+        "stable": {
+            "finish-args-home-filesystem-access": "OrcaSlicer needs persistent access to model files, recent projects, and G-code export across arbitrary user directories",
+            "finish-args-flatpak-appdata-folder-access": "Read-only access to legacy config/cache directory (~/.var/app/io.github.orcaslicer.OrcaSlicer) for migration from old app-id"
         }
     },
     "io.github.switch_bros.SteamLibraryManager": {
