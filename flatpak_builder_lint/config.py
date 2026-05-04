@@ -81,3 +81,12 @@ def is_flatmgr_pipeline() -> bool:
 
 def is_flathub_pipeline() -> bool:
     return is_flathub_build_pipeline() or is_flatmgr_pipeline()
+
+
+def get_lint_flags() -> set[str]:
+    return {f.strip() for f in os.getenv("FLATPAK_BUILDER_LINT", "").lower().split(",")}
+
+
+DEBUG = "debug" in get_lint_flags()
+SKIP_EOLRUNTIME_CHECKS = "skip-eol-runtime-checks" in get_lint_flags()
+SKIP_POLICY_ENFORCEMENT = "skip-policy-enforcement" in get_lint_flags()

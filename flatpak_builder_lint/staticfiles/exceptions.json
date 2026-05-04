@@ -199,7 +199,6 @@
     },
     "ca.parallel_launcher.ParallelLauncher": {
         "stable": {
-            "finish-args-contains-both-x11-and-wayland": "Predates the linter rule",
             "finish-args-host-filesystem-access": "Predates the linter rule",
             "finish-args-login1-talk-name": "Predates the linter rule"
         }
@@ -491,6 +490,11 @@
             "finish-args-unnecessary-xdg-data-Trash-rw-access": "Needs direct trash access, doesn't use portal"
         }
     },
+    "com.clustta.clustta": {
+        "stable": {
+            "finish-args-home-filesystem-access": "Version control tool requiring direct access to user-chosen project directories"
+        }
+    },
     "com.carpeludum.KegaFusion": {
         "stable": {
             "finish-args-home-ro-filesystem-access": "Predates the linter rule"
@@ -739,7 +743,6 @@
     },
     "com.github.Flacon": {
         "stable": {
-            "appid-code-hosting-too-few-components": "app-id predates this linter rule",
             "appid-uses-code-hosting-domain": "app-id predates this linter rule",
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
@@ -1751,8 +1754,7 @@
     },
     "com.gitlab.coringao.JAG": {
         "stable": {
-            "appid-uses-code-hosting-domain": "app-id predates this linter rule",
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
+            "appid-uses-code-hosting-domain": "app-id predates this linter rule"
         }
     },
     "com.gitlab.coringao.cavestory-nx": {
@@ -1985,7 +1987,8 @@
         "stable": {
             "finish-args-arbitrary-dbus-access": "IDEs tend to require direct dbus access",
             "finish-args-flatpak-spawn-access": "the app predates this linter rule",
-            "finish-args-host-filesystem-access": "Predates the linter rule"
+            "finish-args-host-filesystem-access": "Predates the linter rule",
+            "finish-args-contains-both-x11-and-wayland": "Rider uses Wayland but some capabilities needs X11, like Avalonia development"
         }
     },
     "com.jetbrains.RustRover": {
@@ -2925,7 +2928,6 @@
     },
     "de.schmidhuberj.tubefeeder": {
         "*": {
-            "finish-args-flatpak-spawn-access": "Spawn arbitrary video player",
             "finish-args-unnecessary-xdg-data-tubefeeder-create-access": "the app predates this linter rule"
         }
     },
@@ -3109,7 +3111,9 @@
     },
     "dev.qwery.AddWater": {
         "*": {
-            "finish-args-flatpak-appdata-folder-access": "Predates the linter rule"
+            "finish-args-flatpak-appdata-folder-access": "Needed to install theme to Flatpak'ed Firefox",
+            "finish-args-unnecessary-xdg-config-mozilla-rw-access": "Needed to install theme to Firefox profiles stored in xdg-config",
+            "finish-args-unnecessary-xdg-config-librewolf-rw-access": "Needed to install theme to Librewolf profiles stored in xdg-config"
         }
     },
     "dev.restfox.Restfox": {
@@ -3714,6 +3718,11 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
+    "io.github.avomar.dev-toolbox": {
+        "stable": {
+            "finish-args-unnecessary-xdg-config-cosmic-ro-access": "Required to read the system theme and listen for config changes in the host"
+        }
+    },
     "io.github.bcpierce00.unison": {
         "stable": {
             "finish-args-flatpak-appdata-folder-access": "Unison must be able to sync all the user's data or config files",
@@ -4059,6 +4068,11 @@
             "finish-args-own-name-org.insilmaril.vym-2": "Predates the linter rule"
         }
     },
+    "io.github.intoolswetrust.JSignPdf": {
+        "*": {
+            "finish-args-home-filesystem-access": "A Java app that doesn't support XDG portals and needs access to user's PDFs to sign"
+        }
+    },
     "io.github.iptux_src.iptux": {
         "*": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
@@ -4287,6 +4301,10 @@
             "finish-args-unnecessary-xdg-data-DiscordCanary-rw-access": "Needed to patch Discord Canary",
             "finish-args-unnecessary-xdg-data-DiscordDevelopment-rw-access": "Needed to patch Discord Development",
             "finish-args-unnecessary-xdg-data-DiscordPTB-rw-access": "Needed to patch Discord PTB",
+            "finish-args-unnecessary-xdg-config-discord-rw-access": "Needed to patch Discord",
+            "finish-args-unnecessary-xdg-config-discordcanary-rw-access": "Needed to patch Discord Canary",
+            "finish-args-unnecessary-xdg-config-discorddevelopment-rw-access": "Needed to patch Discord Development",
+            "finish-args-unnecessary-xdg-config-discordptb-rw-access": "Needed to patch Discord PTB",
             "finish-args-unnecessary-xdg-data-flatpak-create-access": "Needed to set permission overrides",
             "finish-args-unnecessary-xdg-data-flatpak-rw-access": "Needed to patch Flatpak installations of Discord"
         }
@@ -5029,7 +5047,6 @@
     },
     "io.mgba.mGBA": {
         "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule",
             "finish-args-host-filesystem-access": "Predates the linter rule"
         }
     },
@@ -5256,6 +5273,11 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
+    "me.spaceinbox.swiftynotes": {
+        "stable": {
+            "finish-args-home-filesystem-access": "Notes app stores each note as a plain markdown file; users select their notes library directory and commonly point it at cloud-synced folders (Syncthing, Nextcloud, Dropbox, custom rclone mounts) outside standard XDG locations so notes stay in sync across devices"
+        }
+    },
     "me.timschneeberger.GalaxyBudsClient": {
         "stable": {
             "finish-args-own-name-wildcard-org.kde": "The used version of the toolkit Avalonia only supports legacy KDE system tray icons: https://github.com/AvaloniaUI/Avalonia/issues/13782"
@@ -5413,11 +5435,6 @@
         }
     },
     "net.launchpad.Gnuclad": {
-        "stable": {
-            "finish-args-home-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "net.longturn.freeciv21": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
@@ -5687,7 +5704,6 @@
     },
     "net.werwolv.ImHex": {
         "stable": {
-            "finish-args-host-filesystem-access": "Predates the linter rule",
             "flathub-json-automerge-enabled": "Predates the linter rule"
         }
     },
@@ -5835,11 +5851,6 @@
         }
     },
     "org.blender.Blender": {
-        "stable": {
-            "finish-args-host-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "org.bluej.BlueJ": {
         "stable": {
             "finish-args-host-filesystem-access": "Predates the linter rule"
         }
@@ -7460,7 +7471,6 @@
     },
     "org.kde.krename": {
         "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule",
             "finish-args-host-filesystem-access": "Predates the linter rule"
         }
     },
@@ -8567,7 +8577,7 @@
         }
     },
     "org.zdoom.UZDoom": {
-        "*": {
+        "beta": {
             "finish-args-flatpak-appdata-folder-access": "UZDoom can automatically detect required data for supported games from Steam installations"
         }
     },
@@ -8636,7 +8646,8 @@
     },
     "page.codeberg.JakobDev.jdPermissionStoreEdit": {
         "stable": {
-            "finish-args-unnecessary-xdg-data-flatpak-ro-access": "Needs acccess to xdg-data/flatpak/db"
+            "finish-args-unnecessary-xdg-data-flatpak-ro-access": "Needs acccess to xdg-data/flatpak/db",
+            "finish-args-portal-impl-permissionstore-talk-name": "Needs to mdoify the permission store"
         }
     },
     "page.codeberg.JakobDev.jdProcessFileWatcher": {
@@ -8870,6 +8881,12 @@
             "appid-url-not-reachable": "Request is returning 403, https://github.com/flathub/flathub/pull/5529#issuecomment-2325455509"
         }
     },
+    "systems.fracture.launcher": {
+        "stable": {
+            "finish-args-dconf-talk-name": "Application uses dconf to check keyboard shortcuts and add a keyboard shortcut",
+            "finish-args-direct-dconf-path": "Application uses dconf to check keyboard shortcuts and add a keyboard shortcut"
+        }
+    },
     "tech.keyforge.keyforge_master": {
         "*": {
             "finish-args-flatpak-spawn-access": "Required to run 'udevadm' on the host system via flatpak-spawn for USB keyboard device detection and enumeration"
@@ -9001,6 +9018,16 @@
     "org.cvfosammmm.Lemma": {
         "stable": {
             "finish-args-home-filesystem-access": "Required importing markdown files with images and attachments, only the main file can be accessed through the portal."
+        }
+    },
+    "com.chirpmyradio.chirp": {
+        "stable": {
+            "finish-args-home-filesystem-access": "Requred for importing and exporting files from the app due to it lacking xdg portals support."
+        }
+    },
+    "gov.nasa.giss.Panoply": {
+        "stable": {
+            "finish-args-home-filesystem-access": "Required for importing and exporting files from the app due to it lacking xdg portals support."
         }
     }
 }
