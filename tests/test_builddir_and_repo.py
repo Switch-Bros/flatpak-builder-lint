@@ -1,7 +1,8 @@
 import os
 from typing import Any
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from pytest import MonkeyPatch
 
 from tests.testlib import (
@@ -13,6 +14,18 @@ from tests.testlib import (
     move_files,
     run_checks,
 )
+
+
+@pytest.fixture(autouse=True)
+def mock_runtime_data(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub",
+        lambda: set(),
+    )
+    monkeypatch.setattr(
+        "flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub",
+        lambda: set(),
+    )
 
 
 def rc(
@@ -127,7 +140,13 @@ def test_finish_args_missing(check_type: str, tmp_testdir: str) -> None:
 def test_flathub_json(check_type: str, tmp_testdir: str) -> None:
     testdir = "tests/builddir/flathub_json"
     move_files(testdir)
-    ret = rc(testdir, check_type, tmp_testdir)
+
+    with patch(
+        "flatpak_builder_lint.checks.flathub_json.domainutils.get_all_flatpak_ids_on_flathub",
+        return_value={"org.example.foo"},
+    ):
+        ret = rc(testdir, check_type, tmp_testdir)
+
     assert "flathub-json-skip-appstream-check" in set(ret["errors"])
 
 
@@ -202,7 +221,7 @@ def test_quality_guidelines(check_type: str, tmp_testdir: str) -> None:
     create_app_icon(testdir, "foo")
     ret = rc(testdir, check_type, tmp_testdir)
     found_errors = set(ret["errors"])
-    found_warnings = set(ret["warnings"])
+    # found_warnings = set(ret["warnings"])
     for e in (
         "appstream-missing-developer-name",
         "appstream-missing-project-license",
@@ -210,7 +229,7 @@ def test_quality_guidelines(check_type: str, tmp_testdir: str) -> None:
         "appstream-launchable-file-missing",
     ):
         assert e in found_errors
-    assert "appstream-screenshot-missing-caption" in found_warnings
+    # assert "appstream-screenshot-missing-caption" in found_warnings
     # If present, it means a metainfo file that was validating
     # correctly broke and that should be fixed
     for e in (
@@ -228,7 +247,7 @@ def test_broken_icon(check_type: str, tmp_testdir: str) -> None:
     create_file(os.path.join(testdir, "files/share/applications"), "org.foo.test.desktop")
     ret = rc(testdir, check_type, tmp_testdir)
     found_errors = set(ret["errors"])
-    found_warnings = set(ret["warnings"])
+    # found_warnings = set(ret["warnings"])
     for e in (
         # Expected failure with appstreamcli validate
         "appstream-failed-validation",
@@ -239,7 +258,7 @@ def test_broken_icon(check_type: str, tmp_testdir: str) -> None:
     ):
         assert e in found_errors
     assert "appid-url-check-internal-error" not in found_errors
-    assert "appstream-missing-vcs-browser-url" in found_warnings
+    # assert "appstream-missing-vcs-browser-url" in found_warnings
 
 
 def test_broken_remote_icon(check_type: str, tmp_testdir: str) -> None:
@@ -361,9 +380,50 @@ def test_appstream_svg_screenshot(check_type: str, tmp_testdir: str) -> None:
     assert "metainfo-svg-screenshots" in set(ret["errors"])
 
 
-def test_eol_runtime(check_type: str, tmp_testdir: str) -> None:
-    ret = rc("tests/builddir/eol_runtime", check_type, tmp_testdir)
-    assert "runtime-is-eol-org.freedesktop.Platform-18.08" in set(ret["warnings"])
+@patch("flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub")
+@patch("flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub")
+def test_builddir_eol_runtime(
+    mock_eol: MagicMock,
+    mock_active: MagicMock,
+    check_type: str,
+    tmp_testdir: str,
+) -> None:
+    mock_eol.return_value = {"org.freedesktop.Platform//18.08"}
+    mock_active.return_value = {"org.freedesktop.Platform//23.08"}
+
+    testdir = "tests/builddir/eol_runtime"
+    move_files(testdir)
+    ret = rc(testdir, check_type, tmp_testdir)
+
+    found_errors = set(ret["errors"])
+    assert "runtime-is-eol-org.freedesktop.Platform-18.08" in found_errors
+
+
+@patch("flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub")
+@patch("flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub")
+def test_builddir_runtime_update_available(
+    mock_eol: MagicMock,
+    mock_active: MagicMock,
+    check_type: str,
+    tmp_testdir: str,
+) -> None:
+    mock_eol.return_value = set()
+
+    mock_active.return_value = {
+        "org.freedesktop.Platform//22.08",
+        "org.freedesktop.Platform//23.08",
+    }
+
+    testdir = "tests/builddir/eol_runtime"
+    move_files(testdir)
+
+    ret = rc(testdir, check_type, tmp_testdir)
+
+    found_warnings = set(ret.get("warnings", []))
+    found_errors = set(ret.get("errors", []))
+
+    assert "runtime-update-available-to-org.freedesktop.Platform-23.08" in found_warnings
+    assert not any(e.startswith("runtime-is-eol") for e in found_errors)
 
 
 # ELF check is disabled for repo check

@@ -1,10 +1,23 @@
 import os
-from unittest.mock import MagicMock
+from datetime import datetime, timezone
+from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from tests.testlib import create_git_repo, create_large_file, run_checks, set_git_remote_url
+
+
+@pytest.fixture(autouse=True)
+def mock_runtime_data(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.setattr(
+        "flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub",
+        lambda: set(),
+    )
+    monkeypatch.setattr(
+        "flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub",
+        lambda: set(),
+    )
 
 
 @pytest.fixture(scope="module")
@@ -205,10 +218,15 @@ def test_manifest_appid_too_few_cpts() -> None:
 def test_manifest_flathub_json() -> None:
     errors = {
         "flathub-json-skip-appstream-check",
+        "flathub-json-eol-rebase-target-not-on-flathub",
     }
 
-    ret = run_checks("tests/manifests/flathub_json.json")
-    found_errors = set(ret["errors"])
+    with patch(
+        "flatpak_builder_lint.checks.flathub_json.domainutils.get_all_flatpak_ids_on_flathub",
+        return_value={"org.example.foo"},
+    ):
+        ret = run_checks("tests/manifests/flathub_json.json")
+        found_errors = set(ret["errors"])
 
     assert errors.issubset(found_errors)
 
@@ -471,10 +489,45 @@ def test_manifest_symlink() -> None:
     assert "manifest-file-is-symlink" not in found_errors
 
 
-def test_manifest_eol_runtime() -> None:
+@patch("flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub")
+@patch("flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub")
+def test_manifest_eol_runtime(mock_active: MagicMock, mock_eol: MagicMock) -> None:
+    mock_active.return_value = {
+        "org.gnome.Platform//45",
+        "org.gnome.Sdk//45",
+        "org.gnome.Platform//46",
+    }
+    mock_eol.return_value = {
+        "org.gnome.Sdk//40",
+    }
+
     ret = run_checks("tests/manifests/eol_runtime.json")
-    found_warnings = ret["warnings"]
-    assert "runtime-is-eol-org.gnome.Sdk-40" in found_warnings
+    found_errors = ret["errors"]
+    assert "runtime-is-eol-org.gnome.Sdk-40" in found_errors
+
+
+@patch("flatpak_builder_lint.domainutils.get_eol_runtimes_on_flathub")
+@patch("flatpak_builder_lint.domainutils.get_active_runtimes_on_flathub")
+def test_manifest_runtime_update_available(
+    mock_active: MagicMock,
+    mock_eol: MagicMock,
+) -> None:
+    mock_eol.return_value = set()
+
+    mock_active.return_value = {
+        "org.gnome.Platform//45",
+        "org.gnome.Platform//46",
+        "org.gnome.Sdk//45",
+        "org.gnome.Sdk//46",
+    }
+
+    ret = run_checks("tests/manifests/eol_runtime.json")
+
+    found_warnings = set(ret.get("warnings", []))
+    found_errors = set(ret.get("errors", []))
+
+    assert "runtime-update-available-to-org.gnome.Sdk-46" in found_warnings
+    assert "runtime-is-eol-org.gnome.Sdk-40" not in found_errors
 
 
 def test_manifest_in_git_repo(tmp_testdir: str) -> None:
@@ -521,12 +574,66 @@ def test_manifest_json_warnings() -> None:
 
 
 def test_manifest_yaml() -> None:
-    ret = run_checks("tests/manifests/yaml/manfiest-invalid.yml")
+    ret = run_checks("tests/manifests/yaml/invalid/manfiest-invalid.yml")
     found_errors = ret["errors"]
     assert "manifest-invalid-yaml" in found_errors
-    ret = run_checks("tests/manifests/yaml/manfiest-valid.yml")
+    ret = run_checks("tests/manifests/yaml/valid/manfiest-valid.yml")
     found_errors = ret["errors"]
     assert "manifest-invalid-yaml" not in found_errors
+
+
+def test_manifest_json() -> None:
+    invalid_path = "tests/manifests/json/invalid/org.gnome.Totem.json"
+    valid_path = "tests/manifests/json/valid/org.kde.peruse.json"
+
+    fixed_today = datetime(2026, 12, 30, tzinfo=timezone.utc)
+
+    mock_datetime = MagicMock()
+    mock_datetime.now.return_value = fixed_today
+
+    with (
+        patch(
+            "flatpak_builder_lint.policy.datetime",
+            mock_datetime,
+        ),
+        patch(
+            "flatpak_builder_lint.policy.TimedSeverityPolicy.is_enforced",
+            return_value=False,
+        ),
+    ):
+        ret = run_checks(invalid_path)
+
+        assert "manifest-invalid-json" in ret["warnings"]
+        assert "manifest-invalid-json" not in ret.get("errors", set())
+
+        info = ret["info"]
+        assert any("manifest-invalid-json:" in msg for msg in info)
+        assert any("will become an error after" in msg for msg in info)
+        assert any("'1' day remaining" in msg for msg in info)
+        assert any("Manifest(s) must be valid JSON per RFC 7159" in msg for msg in info)
+
+    mock_datetime = MagicMock()
+    mock_datetime.now.return_value = fixed_today
+
+    with (
+        patch(
+            "flatpak_builder_lint.policy.datetime",
+            mock_datetime,
+        ),
+        patch(
+            "flatpak_builder_lint.policy.TimedSeverityPolicy.is_enforced",
+            return_value=True,
+        ),
+    ):
+        ret = run_checks(invalid_path)
+
+        assert "manifest-invalid-json" in ret["errors"]
+        assert "manifest-invalid-json" not in ret.get("warnings", set())
+
+    ret = run_checks(valid_path)
+
+    assert "manifest-invalid-json" not in ret.get("errors", set())
+    assert "manifest-invalid-json" not in ret.get("warnings", set())
 
 
 def test_manifest_build_network_access(monkeypatch: MonkeyPatch) -> None:
