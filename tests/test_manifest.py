@@ -247,10 +247,12 @@ def test_manifest_finish_args() -> None:
         "finish-args-x11-without-ipc",
         "finish-args-contains-both-x11-and-fallback",
         "finish-args-unnecessary-appid-talk-name",
-        "finish-args-flatpak-system-folder-access",
+        "finish-args-flatpak-system-folder-rw-access",
+        "finish-args-flatpak-system-folder-foo-rw-access",
         "finish-args-host-tmp-access",
         "finish-args-host-var-access",
-        "finish-args-flatpak-appdata-folder-access",
+        "finish-args-flatpak-appdata-folder-rw-access",
+        "finish-args-flatpak-appdata-folder-foo-rw-access",
         "finish-args-portal-impl-permissionstore-talk-name",
         "finish-args-legacy-icon-folder-permission",
         "finish-args-legacy-font-folder-permission",
@@ -671,3 +673,56 @@ def test_manifest_home_host_access() -> None:
     found_errors = set(ret["errors"])
     for e in ("finish-args-home-filesystem-access", "finish-args-host-filesystem-access"):
         assert e not in found_errors
+
+
+def test_manifest_finish_args_conditional_permissions() -> None:
+    cases = [
+        (
+            "tests/manifests/finish_args_invalid_conditional_permission.json",
+            {
+                "finish-args-conditional-permission-not-allowed-if-network-true",
+            },
+            set(),
+        ),
+        (
+            "tests/manifests/finish_args_conditional_input_without_input_device.json",
+            {
+                "finish-args-conditional-permission-input-no-restriction",
+            },
+            set(),
+        ),
+        (
+            "tests/manifests/finish_args_conditional_usb_without_usb_device.json",
+            {
+                "finish-args-conditional-permission-usb-no-restriction",
+            },
+            set(),
+        ),
+        (
+            "tests/manifests/finish_args_conditional_input_skips_legacy_errors.json",
+            set(),
+            {
+                "finish-args-no-required-flatpak",
+                "finish-args-insufficient-required-flatpak",
+                "finish-args-has-dev-input",
+            },
+        ),
+        (
+            "tests/manifests/finish_args_conditional_usb_skips_legacy_errors.json",
+            set(),
+            {
+                "finish-args-no-required-flatpak",
+                "finish-args-insufficient-required-flatpak",
+                "finish-args-has-dev-usb",
+            },
+        ),
+    ]
+
+    for manifest, expected, absents in cases:
+        ret = run_checks(manifest)
+        found_errors = set(ret["errors"])
+
+        assert expected.issubset(found_errors)
+
+        for err in absents:
+            assert err not in found_errors

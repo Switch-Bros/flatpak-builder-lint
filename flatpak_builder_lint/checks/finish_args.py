@@ -22,6 +22,64 @@ def _fs_value_matches_prefix(input_path: str, prefix: str, subdirs: bool = True)
     return re.match(pattern, input_path) is not None
 
 
+def _subdir_fs_error(
+    fs: str,
+    prefixes: tuple[str, ...],
+    error_prefix: str,
+) -> str:
+    suffix_mode = "-rw"
+
+    if fs.endswith(":ro"):
+        suffix_mode = "-ro"
+        fs = fs[:-3]
+    elif fs.endswith(":create"):
+        suffix_mode = "-create"
+        fs = fs[:-7]
+    elif fs.endswith(":rw"):
+        suffix_mode = "-rw"
+        fs = fs[:-3]
+
+    for prefix in prefixes:
+        if fs.startswith(prefix):
+            components = [comp.replace(" ", "-") for comp in fs[len(prefix) :].split("/") if comp]
+
+            suffix = "-" + "-".join(components) if components else ""
+
+            return f"{error_prefix}{suffix}{suffix_mode}-access"
+
+    return f"{error_prefix}{suffix_mode}-access"
+
+
+def _flatpak_appdata_error(fs: str) -> str:
+    return _subdir_fs_error(
+        fs,
+        (
+            "~/.var/app/",
+            "home/.var/app/",
+        ),
+        "finish-args-flatpak-appdata-folder",
+    )
+
+
+def _flatpak_system_folder_error(fs: str) -> str:
+    return _subdir_fs_error(
+        fs,
+        ("/var/lib/flatpak/",),
+        "finish-args-flatpak-system-folder",
+    )
+
+
+def _flatpak_user_folder_error(fs: str) -> str:
+    return _subdir_fs_error(
+        fs,
+        (
+            "~/.local/share/flatpak/",
+            "home/.local/share/flatpak/",
+        ),
+        "finish-args-flatpak-user-folder",
+    )
+
+
 class FinishArgsCheck(Check):
     def _validate(self, appid: str | None, finish_args: dict[str, set[str]]) -> None:
         init_ver = finish_args.get("required-flatpak")
@@ -30,6 +88,42 @@ class FinishArgsCheck(Check):
             flatpak_version = next(iter(init_ver))
         if isinstance(init_ver, str):
             flatpak_version = init_ver.split(";", 1)[0]
+
+        allowed_cond_perms = {
+            "if:all:!has-input-device": "fallback-dev-input-to-dev-all",
+            "if:all:!has-usb-device": "fallback-dev-usb-to-dev-all",
+            "if:usb:!has-usb-portal": "fallback-dev-usb-to-usb-portal",
+        }
+
+        cond_perms = {
+            cond
+            for section in ("socket", "share", "device", "features")
+            for cond in finish_args.get(section, [])
+            if cond.startswith("if:") and cond.count(":") == 2
+        }
+
+        invalid_cond_perms = cond_perms - allowed_cond_perms.keys()
+
+        for perm in invalid_cond_perms:
+            normalized = perm.replace("!", "not-").replace(":", "-")
+
+            self.errors.add(f"finish-args-conditional-permission-not-allowed-{normalized}")
+
+        present_cond_perm_idents = {
+            allowed_cond_perms[perm] for perm in cond_perms if perm in allowed_cond_perms
+        }
+
+        if (
+            "fallback-dev-input-to-dev-all" in present_cond_perm_idents
+            and "input" not in finish_args["device"]
+        ):
+            self.errors.add("finish-args-conditional-permission-input-no-restriction")
+
+        if (
+            "fallback-dev-usb-to-dev-all" in present_cond_perm_idents
+            and "usb" not in finish_args["device"]
+        ):
+            self.errors.add("finish-args-conditional-permission-usb-no-restriction")
 
         if "inherit-wayland-socket" in finish_args["socket"]:
             self.errors.add("finish-args-contains-inherit-wayland-socket")
@@ -81,7 +175,14 @@ class FinishArgsCheck(Check):
             if dev.startswith("!"):
                 dv = dev.removeprefix("!")
                 self.errors.add(f"finish-args-has-nodevice-{dv}")
-            if dev in ("input", "usb"):
+
+            skip_checks = (
+                (dev == "input" and "fallback-dev-input-to-dev-all" in present_cond_perm_idents)
+                or (dev == "usb" and "fallback-dev-usb-to-dev-all" in present_cond_perm_idents)
+                or (dev == "usb" and "fallback-dev-usb-to-usb-portal" in present_cond_perm_idents)
+            )
+
+            if dev in ("input", "usb") and not skip_checks:
                 if "required-flatpak" not in finish_args:
                     self.errors.add("finish-args-no-required-flatpak")
                     self.info.add(
@@ -308,7 +409,7 @@ class FinishArgsCheck(Check):
                     "home/.var/app",
                 )
             ):
-                self.errors.add("finish-args-flatpak-appdata-folder-access")
+                self.errors.add(_flatpak_appdata_error(fs))
 
             if any(
                 _fs_value_matches_prefix(fs, prefix)
@@ -338,7 +439,7 @@ class FinishArgsCheck(Check):
                 self.errors.add("finish-args-incorrect-theme-folder-permission")
 
             if _fs_value_matches_prefix(fs, "/var/lib/flatpak"):
-                self.errors.add("finish-args-flatpak-system-folder-access")
+                self.errors.add(_flatpak_system_folder_error(fs))
 
             if any(
                 _fs_value_matches_prefix(fs, prefix)
@@ -347,7 +448,7 @@ class FinishArgsCheck(Check):
                     "home/.local/share/flatpak",
                 )
             ):
-                self.errors.add("finish-args-flatpak-user-folder-access")
+                self.errors.add(_flatpak_user_folder_error(fs))
 
             if _fs_value_matches_prefix(fs, "/tmp"):  # noqa: S108
                 self.errors.add("finish-args-host-tmp-access")
@@ -592,6 +693,14 @@ class FinishArgsCheck(Check):
                     value = f"if:{value}"
                 if key == "device-if":
                     key = "device"
+                    value = f"if:{value}"
+                if key == "share-if":
+                    key = "share"
+                    value = f"if:{value}"
+                if key == "allow":
+                    key = "features"
+                if key == "allow-if":
+                    key = "features"
                     value = f"if:{value}"
                 fa[key].add(value)
 
