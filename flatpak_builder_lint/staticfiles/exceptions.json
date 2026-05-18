@@ -144,7 +144,8 @@
             "finish-args-flatpak-user-folder-app-ro-access": "This app requires read-only access to the hosts' ~/.local/share/flatpak/exports/share/{applications,icons} directories in order to allow users to add them to the applications launched on startup.",
             "finish-args-host-ro-filesystem-access": "Predates the linter rule",
             "finish-args-host-var-access": "This app requires read-only access to the hosts' /var/lib/snapd/desktop/applications directory in order to allow users to add snaps to the applications launched on startup.",
-            "finish-args-unnecessary-xdg-config-autostart-create-access": "This app requires access to the hosts' ~/.config/autostart directory in create mode in order to manage applications launched on startup."
+            "finish-args-unnecessary-xdg-config-autostart-create-access": "This app requires access to the hosts' ~/.config/autostart directory in create mode in order to manage applications launched on startup.",
+            "finish-args-unnecessary-xdg-config-cosmic-ro-access": "This app requires read-only access to the hosts' ~/.config/cosmic directory in order to respect theming for COSMIC apps."
         }
     },
     "br.app.pw3270.terminal": {
@@ -2763,7 +2764,6 @@
     },
     "com.wings3d.WINGS": {
         "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule",
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
@@ -3790,7 +3790,7 @@
     },
     "io.github.benjamimgois.goverlay": {
         "stable": {
-            "finish-args-flatpak-appdata-folder-com.valvesoftware.Steam-rw-access": "Needed for reading Steam and other applications’ MangoHud configuration",
+            "finish-args-flatpak-appdata-folder-com.valvesoftware.Steam-rw-access": "Needed for reading Steam and other applications\u2019 MangoHud configuration",
             "finish-args-unnecessary-xdg-config-MangoHud-rw-access": "Needed for reading MangoHud config files",
             "finish-args-unnecessary-xdg-config-vkBasalt-rw-access": "Needed for reading vkBasalt config files"
         }
@@ -3811,12 +3811,6 @@
     "io.github.bothlab.pomidaq": {
         "stable": {
             "finish-args-home-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "io.github.brunoherbelin.Vimix": {
-        "stable": {
-            "finish-args-host-filesystem-access": "Predates the linter rule",
-            "finish-args-host-tmp-access": "Predates the linter rule"
         }
     },
     "io.github.cboxdoerfer.FSearch": {
@@ -5596,9 +5590,9 @@
         }
     },
     "net.mullvad.MullvadBrowser": {
-        "stable": {
-            "finish-args-login1-system-talk-name": "Predates the linter rule",
-            "finish-args-own-name-wildcard-org.mozilla.mullvadbrowser": "Predates the linter rule"
+        "*": {
+            "finish-args-login1-system-talk-name": "To monitor the system sleep status during playback",
+            "finish-args-own-name-wildcard-org.mozilla.mullvadbrowser": "The Flatpak is not named using the Flathub non-compliant name that the upstream sets in the application"
         }
     },
     "net.natesales.Aviator": {
@@ -7228,11 +7222,6 @@
             "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
-    "org.kde.kamoso": {
-        "stable": {
-            "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
-        }
-    },
     "org.kde.kanagram": {
         "stable": {
             "appstream-id-mismatch-flatpak-id": "appstream-cid predates this linter rule"
@@ -8178,11 +8167,6 @@
     "org.pitivi.Pitivi": {
         "stable": {
             "finish-args-host-filesystem-access": "Predates the linter rule"
-        }
-    },
-    "org.plomgrading.PlomClient": {
-        "*": {
-            "finish-args-home-filesystem-access": "Predates the linter rule"
         }
     },
     "org.polymc.PolyMC": {
